@@ -6,6 +6,8 @@ namespace :webpacker do
     dist_dir = Rails.application.config.x.webpacker[:packs_dist_dir]
     result   = `WEBPACK_DIST_DIR=#{dist_dir} NODE_ENV=production ./bin/webpack --json`
 
+    result = result[result.index("\n")..result.length]
+    
     unless $?.success?
       puts JSON.parse(result)['errors']
       exit! $?.exitstatus
