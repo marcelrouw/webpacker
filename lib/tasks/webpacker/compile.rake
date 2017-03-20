@@ -6,18 +6,18 @@ namespace :webpacker do
     dist_dir = Rails.application.config.x.webpacker[:packs_dist_dir]
     result   = `WEBPACK_DIST_DIR=#{dist_dir} NODE_ENV=production ./bin/webpack --json`
 
-    puts "pass 1 webpacker --json #{$?} - #{$?.success?}: #{result[0..200]}"
+    Rails.logger.info "pass 1 webpacker --json #{$?} - #{$?.success?}: #{result[0..200]}"
     result = result[result.index("\n")..result.length]
-    puts "pass 2 webpacker --json #{$?} - #{$?.success?}: #{result[0..200]}"
+    Rails.logger.info "pass 2 webpacker --json #{$?} - #{$?.success?}: #{result[0..200]}"
 
     unless $?.success?
-      puts "unless 1: #{$?.exitstatus}"
+      Rails.logger.info "unless 1: #{$?.exitstatus}"
       puts JSON.parse(result)['errors']
-      puts "unless 2: #{$?.exitstatus}"
+      Rails.logger.info "unless 2: #{$?.exitstatus}"
       exit! $?.exitstatus
     end
 
-    puts "webpack_digests: before"
+    Rails.logger.info "webpack_digests: before"
 
     webpack_digests = JSON.parse(result)['assetsByChunkName'].each_with_object({}) do |(chunk, file), h|
       h[chunk] = file.is_a?(Array) ? file.find {|f| REGEX_MAP !~ f } : file
